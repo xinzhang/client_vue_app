@@ -1,0 +1,14 @@
+name: web-app-workflow
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
