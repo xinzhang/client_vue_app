@@ -16,3 +16,21 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-files
+      - name: output files
+        run: ls
+      - name: Deploy
+        run: echo "Deploying!"
