@@ -4,8 +4,7 @@ on:
     branches:
       - main
       - dev
-      - feature/*
-
+      # - feature/*
 env:
   MONGO_DB_NAME: gha-demo
   MONGO_URL: ${{ secrets.MONGO_URL }}
@@ -51,6 +50,7 @@ jobs:
       - name: Publish JS filename
         id: publish
         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+        # set-output not working any more
         # run: find dist/assets/*.js -type f -execdir echo '::set-output name=script-file:{}' ';'
       - name: Upload build
         uses: actions/upload-artifact@v3
@@ -71,4 +71,18 @@ jobs:
       - name: output filename
         run: echo "${{ needs.build.outputs.script-file}}"
       - name: Deploy
-        run: echo "Deploying!"
+        uses: ./.github/actions/deploy-s3-js
+        with:
+          bucket: my-test-bucket
+          dist-folder: ./dist
+          bucket-region: us-east-1
+      - name: Output URL
+        run: echo "Deployed to ${{ steps.deploy.outputs.website-url }}"
+
+  information:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: run js custom action
+        uses: ./github/actions/deploy-s3-js
